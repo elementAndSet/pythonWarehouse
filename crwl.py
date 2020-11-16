@@ -34,12 +34,37 @@ def get_html(targetURL : str):
     f.write(result_html)
     f.close()
     return result_html
-
-def start_parsing(html : str):
+def return_img_data_src(html : str) -> list :
     soup = BeautifulSoup(html, 'html.parser')
+    img_list = soup.find_all("img", class_="mimg vimgld")
+    count = 0
+    data_src_list = []
+    for ea in img_list :
+        count = count + 1
+        print(count, " : ", ea.get('data-src'))
+        data_src_list.append(ea.get('data-src'))
+    return data_src_list
+
+def return_url_filename_tuple(url_list : list, nametopic: str) :
+    count = 0
+    numbering = ""
+    listX = []
+    for ea in url_list:
+        count = count + 1
+        numbering = str(count).zfill(3)
+        newfilename = nametopic + numbering
+        newtuple = (ea,newfilename)
+        listX.append(newtuple)
+    print(listX)  
+
+def download_image(url : str, filename : str) -> str:
+    urllib.request.urlretrieve(url,filename)
+    return filename
 
 html = get_html(make_target_URL("new york city"))
-start_parsing(html)
+src_list = return_img_data_src(html)
+return_url_filename_tuple(src_list, "newyork")
+
 
 
 
