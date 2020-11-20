@@ -2,20 +2,19 @@ import pip._vendor.requests as req
 import typing
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
-#r = req.get("http://hleecaster.com/python-web-crawling-with-beautifulsoup")
-#html = r.text
-#f = open('justHtml.html', mode='wt',encoding='utf-8')
-#f.write(html)
-#f.close()
-#soup = BeautifulSoup(html,'html.parser')
+import urllib.request
+import time
+import os
 
-#https://www.bing.com/images/search?q=cosmos+flower&form=HDRSC2&first=1&scenario=ImageBasicHover
-#https://www.bing.com/images/search?q=rose%20flower&qs=n&form=QBIR&sp=-1&pq=rose%20flower&sc=7-11&cvid=6949EEA2CB5A404C894055242B07B719&first=1&scenario=ImageBasicHover
-#https://www.bing.com/images/search?q=rose+flower&form=HDRSC2&first=1&scenario=ImageBasicHover
-#https://www.bing.com/images/search?q=new%20york%20city&qs=n&form=QBIR&sp=-1&pq=new%20york%20city&sc=8-13&cvid=5119A666DB5249F6838E3D3A21F68ECC&first=1&scenario=ImageBasicHover
-#https://www.bing.com/images/search?q=new+york+city&form=HDRSC2&first=1&scenario=ImageBasicHover
+def createFolder(folder):
+    try:
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+    except OSError:
+        print("")
 
-def make_target_URL(keywords : str) -> str :
+
+def make_target_URL(keywords : str) -> str:
     splited_key = keywords.split(" ")
     rejoined_key = "+".join(splited_key)
     #https://www.bing.com/images/search?q=new+york+city&form=HDRSC2&first=1&scenario=ImageBasicHover
@@ -34,6 +33,7 @@ def get_html(targetURL : str):
     f.write(result_html)
     f.close()
     return result_html
+
 def return_img_data_src(html : str) -> list :
     soup = BeautifulSoup(html, 'html.parser')
     img_list = soup.find_all("img", class_="mimg vimgld")
@@ -41,30 +41,51 @@ def return_img_data_src(html : str) -> list :
     data_src_list = []
     for ea in img_list :
         count = count + 1
-        print(count, " : ", ea.get('data-src'))
         data_src_list.append(ea.get('data-src'))
     return data_src_list
 
-def return_url_filename_tuple(url_list : list, nametopic: str) :
+def return_url_filename_tuple(url_list : list, nametopic: str) -> list:
     count = 0
     numbering = ""
     listX = []
+    splited_nametopic = nametopic.split(" ")
+    rejoined_nametopic = "_".join(splited_nametopic)
+    createFolder(rejoined_nametopic)
+    new_file_path = os.getcwd() + "\\" + rejoined_nametopic
     for ea in url_list:
         count = count + 1
         numbering = str(count).zfill(3)
-        newfilename = nametopic + numbering
+        newfilename = new_file_path + "\\" + rejoined_nametopic + "_" + numbering + ".jpeg"
         newtuple = (ea,newfilename)
         listX.append(newtuple)
-    print(listX)  
+    return listX
 
 def download_image(url : str, filename : str) -> str:
-    urllib.request.urlretrieve(url,filename)
-    return filename
+    try:
+        urllib.request.urlretrieve(url,filename)
+        print(filename, "-> download")
+    except:
+        print(filename," -> not downloaded")
+    finally:
+        return filename
 
-html = get_html(make_target_URL("new york city"))
-src_list = return_img_data_src(html)
-return_url_filename_tuple(src_list, "newyork")
 
+def super_work(key_word : str):
+    html = get_html(make_target_URL(key_word))
+    src_list = return_img_data_src(html)
+    url_filename_tuple = return_url_filename_tuple(src_list, key_word)
 
+    print(" list len : ",len(url_filename_tuple))
+    for fea in url_filename_tuple:
+        time.sleep(0.88)
+        download_image(fea[0],fea[1])
+    time.sleep(0.71)
 
-
+with open("city_area3.txt","r") as f:
+    while True:
+        line = f.readline()
+        if not line:
+            break
+        else :
+            super_work(line.rstrip('\n'))
+            #print(line.rstrip('\n'))
