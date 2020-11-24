@@ -17,7 +17,6 @@ def createFolder(folder):
 def make_target_URL(keywords : str) -> str:
     splited_key = keywords.split(" ")
     rejoined_key = "+".join(splited_key)
-    #https://www.bing.com/images/search?q=new+york+city&form=HDRSC2&first=1&scenario=ImageBasicHover
     new_URL_head = "https://www.bing.com/images/search?q="
     new_URL_tail = "&FORM=HDRSC2"
     new_URL_full = new_URL_head + rejoined_key + new_URL_tail
@@ -81,11 +80,11 @@ def super_work(key_word : str):
         download_image(fea[0],fea[1])
     time.sleep(0.71)
 
-with open("city_area3.txt","r") as f:
-    while True:
-        line = f.readline()
-        if not line:
-            break
-        else :
-            super_work(line.rstrip('\n'))
-            #print(line.rstrip('\n'))
+# Bing에서 검색할 키워드가 있는 텍스트파일을 입력
+#with open("city_area3.txt","r") as f:
+#    while True:
+#        line = f.readline()
+#        if not line:
+#            break
+#        else :
+#            super_work(line.rstrip('\n'))
